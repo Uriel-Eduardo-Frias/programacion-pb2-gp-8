@@ -32,7 +32,7 @@ public class Clinica {
 					return paciente;
 				}
 			}
-	    	return null;
+	    	throw new DatoNoEncontradoException("paciente no registrado");
 	    }
 
 	    public void registrarMedico(Medico medico) throws RegistroDobleException {

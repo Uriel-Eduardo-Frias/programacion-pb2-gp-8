@@ -31,6 +31,8 @@ public class ClinicaMedicaTest {
 	    //3
 	    @Test(expected = DatoNoEncontradoException.class)
 	    public void dadoUnPacienteNoRegistradoCuandoSeBuscaPorDniEntoncesLanzaExcepcion() throws DatoNoEncontradoException {
+	    	Clinica sistemaClinica = new Clinica();
+	    	sistemaClinica.buscarPaciente("dniPaciente");
 	    }
 
 	    //4
