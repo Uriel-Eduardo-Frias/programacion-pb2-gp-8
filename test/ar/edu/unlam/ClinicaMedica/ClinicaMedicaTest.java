@@ -48,6 +48,11 @@ public class ClinicaMedicaTest {
 	    //5
 	    @Test(expected = RegistroDobleException.class)
 	    public void dadoUnMedicoQueExisteCuandoSeIntenteRegistrarDeNuevoLanzeExcepcion() throws RegistroDobleException, DatoNoEncontradoException {
+	    	Clinica sistemaClinica = new Clinica();	
+			Medico kinesiologo = new Kinesiologo("1234567", "nombre", "apellido", "telefono", "email");
+			Medico kinesiologo2 = new Kinesiologo("1234567", "nombre", "apellido", "telefono", "email");
+			sistemaClinica.registrarMedico(kinesiologo);
+			sistemaClinica.registrarMedico(kinesiologo2);
 	    }
 
 	    //6

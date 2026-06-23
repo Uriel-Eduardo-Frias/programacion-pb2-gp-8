@@ -36,6 +36,9 @@ public class Clinica {
 	    }
 
 	    public void registrarMedico(Medico medico) throws RegistroDobleException {
+	    	if (existeMedico(medico.getMatricula())) {
+	    		throw new RegistroDobleException("El medico ya fue registrado");
+			}
 	    	this.medicos.add(medico);
 	    }
 
@@ -118,6 +121,15 @@ public class Clinica {
 	    	for (Paciente paciente : this.pacientes) {
 	    		if (paciente.getDni().equals(dni)) {
 	    			return true;
+				}
+			}
+	    	return false;
+	    }
+	    
+	    private boolean existeMedico(String matricula) {
+	    	for (Medico medico : this.medicos) {
+				if (medico.getMatricula().equals(matricula)) {
+					return true;
 				}
 			}
 	    	return false;
