@@ -21,6 +21,11 @@ public class ClinicaMedicaTest {
 		//2
 	    @Test(expected = RegistroDobleException.class)
 	    public void dadoUnPacienteQueExisteCuandoSeIntenteRegistrarDeNuevoLanzeExcepcion() throws RegistroDobleException, DatoNoEncontradoException {
+	    	Clinica sistemaClinica = new Clinica();	
+			Paciente paciente = new Paciente("12345678", "nombre", "apellido", LocalDate.of(2000, 1, 1), "11 3243 4345", 777, "Obra Social", "correo@gmail.com");
+			Paciente paciente2 = new Paciente("12345678", "nombre", "apellido", LocalDate.of(2000, 1, 1), "11 3243 4345", 777, "Obra Social", "correo@gmail.com");
+			sistemaClinica.registrarPaciente(paciente);
+			sistemaClinica.registrarPaciente(paciente2);
 	    }
 
 	    //3

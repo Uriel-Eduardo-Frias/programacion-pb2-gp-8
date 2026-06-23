@@ -20,6 +20,9 @@ public class Clinica {
 	    }
 
 	    public void registrarPaciente(Paciente paciente) throws RegistroDobleException {
+	    	if (existePaciente(paciente.getDni())) {
+	    		throw new RegistroDobleException("El paciente ya fue registrado");
+			}
 	    	this.pacientes.add(paciente);
 	    }
 
@@ -105,6 +108,15 @@ public class Clinica {
 	    public TreeSet<Paciente> obtenerListaDePacientesOrdenadosPorApellidoYNombreAscendente() {
 	    	// TODO Auto-generated method stub
 	    	return null;
+	    }
+	    
+	    private boolean existePaciente(String dni) {
+	    	for (Paciente paciente : this.pacientes) {
+	    		if (paciente.getDni().equals(dni)) {
+	    			return true;
+				}
+			}
+	    	return false;
 	    }
 }
 	    
