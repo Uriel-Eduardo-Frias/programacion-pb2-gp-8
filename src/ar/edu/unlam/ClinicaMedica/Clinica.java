@@ -20,11 +20,15 @@ public class Clinica {
 	    }
 
 	    public void registrarPaciente(Paciente paciente) throws RegistroDobleException {
-	    	// TODO Auto-generated method stub
+	    	this.pacientes.add(paciente);
 	    }
 
 	    public Paciente buscarPaciente(String dni) throws DatoNoEncontradoException {
-	    	// TODO Auto-generated method stub
+	    	for (Paciente paciente : this.pacientes) {
+				if (paciente.getDni().equals(dni)) {
+					return paciente;
+				}
+			}
 	    	return null;
 	    }
 

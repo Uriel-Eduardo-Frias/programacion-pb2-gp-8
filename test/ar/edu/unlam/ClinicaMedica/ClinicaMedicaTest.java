@@ -1,5 +1,9 @@
 package ar.edu.unlam.ClinicaMedica;
 
+import static org.junit.Assert.assertEquals;
+
+import java.time.LocalDate;
+
 import org.junit.Test;
 
 public class ClinicaMedicaTest {
@@ -7,7 +11,12 @@ public class ClinicaMedicaTest {
 		//1
 		@Test
 	    public void dadoUnPacienteValidoCuandoSeRegistreEnElSistemaObtengoResultadoExitoso() throws RegistroDobleException, DatoNoEncontradoException {
-	    }
+			Clinica sistemaClinica = new Clinica();	
+			Paciente paciente = new Paciente("12345678", "nombre", "apellido", LocalDate.of(2000, 1, 1), "11 3243 4345", 777, "Obra Social", "correo@gmail.com");
+			sistemaClinica.registrarPaciente(paciente);
+			Paciente pacienteBuscado = sistemaClinica.buscarPaciente("12345678");
+			assertEquals(pacienteBuscado, paciente);
+		}
 
 		//2
 	    @Test(expected = RegistroDobleException.class)
