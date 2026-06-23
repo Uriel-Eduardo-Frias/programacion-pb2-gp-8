@@ -36,11 +36,15 @@ public class Clinica {
 	    }
 
 	    public void registrarMedico(Medico medico) throws RegistroDobleException {
-	    	// TODO Auto-generated method stub
+	    	this.medicos.add(medico);
 	    }
 
 	    public Medico buscarMedico(String matricula) throws DatoNoEncontradoException {
-	    	// TODO Auto-generated method stub
+	    	for (Medico medico : medicos) {
+				if (medico.getMatricula().equals(matricula)) {
+					return medico;
+				}
+			}
 	    	return null;
 	    }
 
