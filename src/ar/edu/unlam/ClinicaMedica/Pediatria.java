@@ -11,7 +11,7 @@ public class Pediatria extends Medico {
 	@Override
 	public Integer calcularDuracionDeUnTurno() {
 		// TODO Auto-generated method stub
-		return null;
+		return 10;
 	}
 
 	@Override

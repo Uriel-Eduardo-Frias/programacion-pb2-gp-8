@@ -1,6 +1,7 @@
 package ar.edu.unlam.ClinicaMedica;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,7 +33,7 @@ public class Clinica {
 					return paciente;
 				}
 			}
-	    	throw new DatoNoEncontradoException("paciente no registrado");
+	    	return null;
 	    }
 
 	    public void registrarMedico(Medico medico) throws RegistroDobleException {
@@ -51,25 +52,113 @@ public class Clinica {
 	    	return null;
 	    }
 
-	    public void agendarTurno(String identificador, Paciente paciente, Medico medico, LocalDateTime fechaYHora) throws RegistroDobleException, SolicitudDenegadaException {
-	    	// TODO Auto-generated method stub    
+	    public void agendarTurno(Turno turno) throws RegistroDobleException, SolicitudDenegadaException, DatoNoEncontradoException {
+
+	        if (buscarTurno(turno.getIdentificador()) != null ) {
+	            throw new RegistroDobleException("El turno ya fue registrado anteriormente");
+	        }
+	      
+	        Paciente pacienteEncontrado = buscarPaciente(turno.getPaciente().getDni());
+	        Medico medicoEncontrado = buscarMedico(turno.getMedico().getMatricula());
+	        
+	        if(pacienteEncontrado == null || medicoEncontrado == null ) {
+	        	throw new DatoNoEncontradoException("Medico o Paciente no encontrado");
+	        }
+	        
+	        
+	        Boolean fechaValida = validarFechaYHora(turno);
+	        if (!fechaValida) {
+	            throw new SolicitudDenegadaException("La fecha u hora no son válidas");
+	        }
+	        this.turnos.put(turno.getIdentificador(), turno);
+	    }
+	    
+	    public Turno buscarTurno(String identificador)  {
+	        
+	        Turno turno = turnos.get(identificador);
+	        
+	        if (turno != null) {
+	            return turno;
+	        }
+
+	        return null;
 	    }
 
-	    public Turno buscarTurno(String identificador) throws DatoNoEncontradoException {
-	    	// TODO Auto-generated method stub
-	    	return null;
+	    public HashMap<Medico, List<Paciente>> reporteMedicoConPacientes(){
+	    	
+	    	HashMap<Medico, List<Paciente>> reporteMedicoConPaciente = new HashMap<>();
+	    	for (Map.Entry<String, Turno> entry : turnos.entrySet()) {
+				Turno val = entry.getValue();
+				
+				if(!reporteMedicoConPaciente.containsKey(val.getMedico())) {
+					List<Paciente> listaDePacientes = new ArrayList<>();
+					listaDePacientes.add(val.getPaciente());
+					reporteMedicoConPaciente.put(val.getMedico(), listaDePacientes);
+				}else {
+					reporteMedicoConPaciente.get(val.getMedico()).add(val.getPaciente());
+				}
+			}
+	    	
+			return reporteMedicoConPaciente;
 	    }
+	    
+	    public Boolean validarFechaYHora(Turno turnoNuevo) throws SolicitudDenegadaException {
+	        
+	        LocalDateTime inicioNuevo = turnoNuevo.getFechaYHora();
+	        Integer duracionNuevo = turnoNuevo.getMedico().calcularDuracionDeUnTurno();
+	        LocalDateTime finNuevo = inicioNuevo.plusMinutes(duracionNuevo);
+	        
+	        for (Turno turnoExistente : turnos.values()) {
+	            if (turnoExistente.getMedico().getMatricula().equals(turnoNuevo.getMedico().getMatricula())) {
+	                LocalDateTime inicioExistente = turnoExistente.getFechaYHora();
+	                Integer duracionExistente = turnoExistente.getMedico().calcularDuracionDeUnTurno();
+	                LocalDateTime finExistente = inicioExistente.plusMinutes(duracionExistente);
 
+	                if (inicioNuevo.isBefore(finExistente) && finNuevo.isAfter(inicioExistente)) {
+	                    throw new SolicitudDenegadaException("El turno se superpone con otro turno asignado a este médico");
+	                }
+	            }
+	        }
+	        return true;
+	    }
+	    
+	    
 	    public void atenderTurno(String identificador) throws SolicitudDenegadaException, DatoNoEncontradoException {
-	    	// TODO Auto-generated method stub
+	        
+	    	Turno turnoBuscado = buscarTurno(identificador);
+	    	if ( turnoBuscado == null ) {
+	            throw new DatoNoEncontradoException("El turno no fue encontrado");
+	        }
+	    	if(validarFechaYHora(turnoBuscado) == true && turnoBuscado.getEstado().equals(Estado.PENDIENTE)) {
+	    		turnoBuscado.setEstado(Estado.ATENDIDO);
+	    	}
+	        
+	        
 	    }
 
 	    public void cancelarTurno(String identificador) throws SolicitudDenegadaException, DatoNoEncontradoException {
-	    	// TODO Auto-generated method stub
+	    	Turno turnoBuscado = buscarTurno(identificador);
+	    	if ( turnoBuscado == null ) {
+	            throw new DatoNoEncontradoException("El turno no fue encontrado");
+	        }
+	    	if(validarFechaYHora(turnoBuscado) == true && turnoBuscado.getEstado().equals(Estado.PENDIENTE)) {
+	    		turnoBuscado.setEstado(Estado.CANCELADO);
+	    	}
+	    	if(turnoBuscado.getEstado().equals(Estado.ATENDIDO)) {
+	    		 throw new SolicitudDenegadaException("El turno ya fue atendido, no se puede cancelar");
+	    	}
+	    	
 	    }
 
 	    public void reprogramarTurno(String identificador, LocalDateTime nuevaFecha) throws SolicitudDenegadaException, DatoNoEncontradoException {
-	    	// TODO Auto-generated method stub
+	    	Turno turnoBuscado = buscarTurno(identificador);
+	    	if ( turnoBuscado == null ) {
+	            throw new DatoNoEncontradoException("El turno no fue encontrado");
+	        }
+	    	if(validarFechaYHora(turnoBuscado) == true && turnoBuscado.getEstado().equals(Estado.CANCELADO)) {
+	    		turnoBuscado.setEstado(Estado.PENDIENTE);
+	    	}
+	    	
 	    }
 
 	    public double obtenerCostoDeLaConsultaDeUnTurno(String identificador) throws DatoNoEncontradoException {
@@ -78,8 +167,13 @@ public class Clinica {
 	    }
 
 	    public TreeSet<Turno> obtenerListaOrdenadaDeFormaAscendentePorFechaYHora() {
-	    	// TODO Auto-generated method stub
-	    	return null;
+
+	    	TreeSet<Turno> turnosOrdenadosPorFechaHora = new TreeSet<>(new OrdenarFechaHoraAsc());
+			
+	    	turnosOrdenadosPorFechaHora.addAll(this.turnos.values());
+	    	
+	    	
+	    	return turnosOrdenadosPorFechaHora;
 	    }
 
 	    public TreeSet<Turno> obtenerListaOrdenadaDeFormaDescendentePorFechaYHora() {
@@ -92,9 +186,17 @@ public class Clinica {
 	    	return null;
 	    }
 
-	    public List<Medico> obtenerListaDeMedicosPorEspecialidad(Especialidad especialidad) {
-	    	// TODO Auto-generated method stub
-	    	return null;
+	    public List<Medico> obtenerListaDeMedicosPorEspecialidad(Especialidad especialidadBuscada) {
+	    	List<Medico> listaDeMedicosPorEspecialidad = new ArrayList<>();
+	    	for (Medico medico : this.medicos) {
+				if(medico.getEspecialidad().equals(especialidadBuscada)) {
+					listaDeMedicosPorEspecialidad.add(medico);	
+					
+				}
+			}
+
+
+	    	return listaDeMedicosPorEspecialidad;
 	    }
 
 	    public List<Paciente> obtenerListaDePacientosAtendidosFiltradoPorMedico(String matricula) {

@@ -10,7 +10,7 @@ public class Dermatologo extends Medico {
 	@Override
 	public Integer calcularDuracionDeUnTurno() {
 		// TODO Auto-generated method stub
-		return null;
+		return 14;
 	}
 
 	@Override
