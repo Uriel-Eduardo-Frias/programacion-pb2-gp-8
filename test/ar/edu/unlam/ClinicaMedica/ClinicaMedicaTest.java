@@ -73,18 +73,44 @@ public class ClinicaMedicaTest {
 	@Test(expected = DatoNoEncontradoException.class)
 	public void dadoUnMedicoNoRegistradoCuandoSeBuscaPorMatriculaEntoncesLanzaExcepcion()
 			throws DatoNoEncontradoException {
+		Clinica sistemaClinica = new Clinica();
+
+		sistemaClinica.buscarMedico("9999999");
 	}
 
 	// 7
 	@Test
 	public void dadoUnTurnoPendienteCuandoSeCanceleCambiaDeEstadoACancelado()
 			throws RegistroDobleException, SolicitudDenegadaException, DatoNoEncontradoException {
+		Clinica sistemaClinica = new Clinica();
+		Paciente paciente = new Paciente("12345678", "nombre", "apellido", LocalDate.of(2000, 1, 1), "11 3243 4345",
+				777, "Obra Social", "correo@gmail.com");
+		sistemaClinica.registrarPaciente(paciente);
+		Medico kinesiologo = new Kinesiologo("1234567", "nombre", "apellido", "telefono", "email");
+		sistemaClinica.registrarMedico(kinesiologo);
+		Turno turno = new Turno("a12", paciente, kinesiologo, LocalDateTime.of(2012, Month.JULY, 22, 12, 0));
+		sistemaClinica.agendarTurno(turno);
+
+		sistemaClinica.cancelarTurno(turno.getIdentificador());
+
+		assertEquals(Estado.CANCELADO, turno.getEstado());
 	}
 
 	// 8
 	@Test(expected = SolicitudDenegadaException.class)
 	public void dadoUnTurnoAtendidoCuandoSeIntentaCancelarLanzaExcepcion()
 			throws RegistroDobleException, SolicitudDenegadaException, DatoNoEncontradoException {
+		Clinica sistemaClinica = new Clinica();
+		Paciente paciente = new Paciente("12345678", "nombre", "apellido", LocalDate.of(2000, 1, 1), "11 3243 4345",
+				777, "Obra Social", "correo@gmail.com");
+		sistemaClinica.registrarPaciente(paciente);
+		Medico kinesiologo = new Kinesiologo("1234567", "nombre", "apellido", "telefono", "email");
+		sistemaClinica.registrarMedico(kinesiologo);
+		Turno turno = new Turno("a12", paciente, kinesiologo, LocalDateTime.of(2012, Month.JULY, 22, 12, 0));
+		sistemaClinica.agendarTurno(turno);
+		turno.setEstado(Estado.ATENDIDO);
+
+		sistemaClinica.cancelarTurno(turno.getIdentificador());
 	}
 
 	// 9
