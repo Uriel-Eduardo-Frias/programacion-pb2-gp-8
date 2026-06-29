@@ -49,7 +49,7 @@ public class Clinica {
 				return medico;
 			}
 		}
-		return null;
+		throw new DatoNoEncontradoException("El medico no fue encontrado");
 	}
 
 	public void agendarTurno(Turno turno)
@@ -139,13 +139,10 @@ public class Clinica {
 		if (turnoBuscado == null) {
 			throw new DatoNoEncontradoException("El turno no fue encontrado");
 		}
-		if (validarFechaYHora(turnoBuscado) == true && turnoBuscado.getEstado().equals(Estado.PENDIENTE)) {
-			turnoBuscado.setEstado(Estado.CANCELADO);
-		}
 		if (turnoBuscado.getEstado().equals(Estado.ATENDIDO)) {
 			throw new SolicitudDenegadaException("El turno ya fue atendido, no se puede cancelar");
 		}
-
+		turnoBuscado.setEstado(Estado.CANCELADO);
 	}
 
 	public void reprogramarTurno(String identificador, LocalDateTime nuevaFecha)
@@ -174,8 +171,12 @@ public class Clinica {
 	}
 
 	public TreeSet<Turno> obtenerListaOrdenadaDeFormaDescendentePorFechaYHora() {
-		// TODO Auto-generated method stub
-		return null;
+
+		TreeSet<Turno> turnosOrdenadosPorFechaHora = new TreeSet<>(new OrdenarFechaHoraDesc());
+
+		turnosOrdenadosPorFechaHora.addAll(this.turnos.values());
+
+		return turnosOrdenadosPorFechaHora;
 	}
 
 	public List<Turno> obtenerTurnosPendientesFiltradoPorDniDePaciente(String dni) {
