@@ -171,8 +171,12 @@ public class Clinica {
 	}
 
 	public TreeSet<Turno> obtenerListaOrdenadaDeFormaDescendentePorFechaYHora() {
-		// TODO Auto-generated method stub
-		return null;
+
+		TreeSet<Turno> turnosOrdenadosPorFechaHora = new TreeSet<>(new OrdenarFechaHoraDesc());
+
+		turnosOrdenadosPorFechaHora.addAll(this.turnos.values());
+
+		return turnosOrdenadosPorFechaHora;
 	}
 
 	public List<Turno> obtenerTurnosPendientesFiltradoPorDniDePaciente(String dni) {

@@ -117,12 +117,44 @@ public class ClinicaMedicaTest {
 	@Test
 	public void dadoUnHorarioDisponibleCuandoSeSolicitaUnTurnoEntoncesSeAsignaCorrectamente()
 			throws RegistroDobleException, SolicitudDenegadaException, DatoNoEncontradoException {
+		Clinica sistemaClinica = new Clinica();
+		Paciente paciente = new Paciente("12345678", "nombre", "apellido", LocalDate.of(2000, 1, 1), "11 3243 4345",
+				777, "Obra Social", "correo@gmail.com");
+		sistemaClinica.registrarPaciente(paciente);
+		Medico kinesiologo = new Kinesiologo("1234567", "nombre", "apellido", "telefono", "email");
+		sistemaClinica.registrarMedico(kinesiologo);
+		Turno turno = new Turno("a12", paciente, kinesiologo, LocalDateTime.of(2012, Month.JULY, 22, 12, 0));
+
+		sistemaClinica.agendarTurno(turno);
+
+		Turno turnoAsignado = sistemaClinica.buscarTurno(turno.getIdentificador());
+		assertEquals(turno, turnoAsignado);
+		assertEquals(Estado.PENDIENTE, turnoAsignado.getEstado());
 	}
 
 	// 10
 	@Test
 	public void dadoQueExisteUnaClinicaConUnaListaDeTurnosOrdenarPorFechaYHoraDeFormaDescendente()
 			throws RegistroDobleException, SolicitudDenegadaException, DatoNoEncontradoException {
+		Clinica sistemaClinica = new Clinica();
+		Paciente paciente = new Paciente("12345678", "nombre", "apellido", LocalDate.of(2000, 1, 1), "11 3243 4345",
+				777, "Obra Social", "correo@gmail.com");
+		sistemaClinica.registrarPaciente(paciente);
+		Medico kinesiologo = new Kinesiologo("1234567", "nombre", "apellido", "telefono", "email");
+		sistemaClinica.registrarMedico(kinesiologo);
+
+		Turno turno = new Turno("a12", paciente, kinesiologo, LocalDateTime.of(2012, Month.JULY, 22, 12, 0));
+		Turno turno2 = new Turno("a13", paciente, kinesiologo, LocalDateTime.of(2012, Month.JULY, 23, 12, 0));
+		Turno turno3 = new Turno("a15", paciente, kinesiologo, LocalDateTime.of(2012, Month.JULY, 23, 22, 0));
+
+		sistemaClinica.agendarTurno(turno);
+		sistemaClinica.agendarTurno(turno2);
+		sistemaClinica.agendarTurno(turno3);
+
+		TreeSet<Turno> turnos = sistemaClinica.obtenerListaOrdenadaDeFormaDescendentePorFechaYHora();
+
+		assertEquals(turno3.getFechaYHora(), turnos.first().getFechaYHora());
+		assertEquals(turno.getFechaYHora(), turnos.last().getFechaYHora());
 	}
 
 	// 11
